@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Harmony Movers — Scoreboard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans','Helvetica Neue',sans-serif;background:#fff;color:#1a1a1a;-webkit-font-smoothing:antialiased}
+.wrap{max-width:740px;margin:0 auto;padding:2rem 1.25rem}
+.mono{font-family:'Space Mono',monospace}
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem}
+.header-left{display:flex;align-items:center;gap:14px}
+.logo{width:48px;height:48px;border-radius:50%;background:#c0392b;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(192,57,43,0.25)}
+.header h1{font-size:20px;font-weight:700;letter-spacing:-0.02em}
+.header .date{font-size:13px;color:#888;text-transform:capitalize}
+.btn{background:none;border:1.5px solid #e0e0e0;border-radius:8px;padding:6px 14px;font-size:12px;color:#666;cursor:pointer;font-family:inherit;font-weight:500;transition:all .2s}
+.btn:hover{border-color:#ccc;background:#fafafa}
+.cards{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;margin-bottom:2rem}
+.card-red{background:linear-gradient(135deg,#c0392b,#a93226);border-radius:14px;padding:1.15rem;color:#fff;position:relative;overflow:hidden}
+.card-red .circle{position:absolute;top:-20px;right:-20px;width:70px;height:70px;border-radius:50%;background:rgba(255,255,255,0.08)}
+.card{background:#fafafa;border:1.5px solid #eee;border-radius:14px;padding:1.15rem}
+.card-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px}
+.card-red .card-label{opacity:0.85}
+.card .card-label{color:#888}
+.card-number{font-size:30px;font-weight:700;line-height:1}
+.card-sub{font-size:10px;margin-top:4px}
+.card-red .card-sub{opacity:0.7}
+.card .card-sub{color:#aaa}
+.card .card-number{color:#1a1a1a}
+.ring-card{display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring-wrap{position:relative;width:64px;height:64px}
+.ring-text{position:absolute;top:0;left:0;width:64px;height:64px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#c0392b}
+.section-title{font-size:15px;font-weight:700;letter-spacing:-0.01em;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.advisor-row{display:flex;align-items:center;gap:12px;margin-bottom:10px;opacity:0;transform:translateX(-16px);animation:slideIn .4s ease-out forwards}
+.advisor-rank{font-size:18px;font-weight:700;min-width:28px}
+.advisor-name{font-size:14px;font-weight:500;min-width:85px;color:#333}
+.advisor-bar-bg{flex:1;height:28px;background:#f5f5f5;border-radius:6px;overflow:hidden}
+.advisor-bar{height:100%;border-radius:6px;display:flex;align-items:center;justify-content:flex-end;padding-right:10px;transition:width 1s cubic-bezier(0.4,0,0.2,1)}
+.advisor-bar span{font-size:12px;font-weight:700;color:rgba(255,255,255,0.9)}
+.advisor-count{font-size:20px;font-weight:700;min-width:32px;text-align:right;color:#1a1a1a}
+.booking-row{display:flex;align-items:center;padding:8px 12px;border-radius:8px}
+.booking-row:nth-child(odd){background:#fafafa}
+.booking-dot{width:6px;height:6px;border-radius:50%;background:#21ce78;margin-right:10px;flex-shrink:0}
+.booking-name{font-size:13px;font-weight:500;color:#333;flex:1}
+.booking-date{font-size:11px;color:#aaa;margin-right:10px}
+.booking-badge{font-size:11px;font-weight:500;padding:2px 10px;border-radius:20px}
+.chart-wrap{display:flex;align-items:flex-end;gap:5px;height:110px;padding:0 2px}
+.chart-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
+.chart-bar{width:100%;border-radius:4px 4px 0 0;transition:height .8s cubic-bezier(0.4,0,0.2,1);cursor:pointer;position:relative;min-height:2px}
+.chart-bar:hover{opacity:0.8}
+.chart-bar .tip{display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:3px 8px;border-radius:4px;font-size:11px;white-space:nowrap;z-index:10}
+.chart-bar:hover .tip{display:block}
+.chart-lbl{font-size:9px;color:#aaa;font-weight:500}
+.chart-num{font-size:10px;font-weight:700;color:#1a1a1a}
+.tabs{display:flex;gap:4px;margin-bottom:1.5rem;background:#f5f5f5;border-radius:8px;padding:3px}
+.tab{flex:1;text-align:center;padding:8px;font-size:13px;font-weight:500;border-radius:6px;cursor:pointer;color:#888;transition:all .2s;user-select:none}
+.tab.active{background:#fff;color:#1a1a1a;box-shadow:0 1px 3px rgba(0,0,0,0.08)}
+.expand-btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:500;color:#c0392b;background:#fef2f2;border:none;width:100%;margin-top:8px;font-family:inherit;transition:background .2s}
+.expand-btn:hover{background:#fde8e8}
+.footer{background:#fafafa;border-radius:10px;padding:10px 16px;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:1.5rem}
+.footer-dot{width:6px;height:6px;border-radius:50%;background:#21ce78}
+.footer p{font-size:12px;color:#999}
+.loading{text-align:center;padding:4rem 0}
+.spinner{width:48px;height:48px;border:3px solid #f0f0f0;border-top-color:#c0392b;border-radius:50%;margin:0 auto 1.5rem;animation:spin .8s linear infinite}
+.loading p{font-size:14px;color:#888}
+.error{background:#fef2f2;border:1px solid #fca5a5;border-radius:12px;padding:1.5rem;text-align:center}
+.error p{font-size:14px;color:#991b1b;margin-bottom:12px}
+.error button{background:#c0392b;color:#fff;border:none;border-radius:8px;padding:8px 20px;font-size:13px;cursor:pointer;font-family:inherit;font-weight:500}
+.setup{background:#f8f9fa;border:1.5px solid #e0e0e0;border-radius:14px;padding:2rem;text-align:center}
+.setup h2{font-size:18px;margin-bottom:8px}
+.setup p{font-size:13px;color:#888;margin-bottom:1.5rem;line-height:1.6}
+.setup input{width:100%;padding:10px 14px;border:1.5px solid #ddd;border-radius:8px;font-size:14px;font-family:inherit;margin-bottom:12px}
+.setup input:focus{outline:none;border-color:#c0392b}
+.setup button{background:#c0392b;color:#fff;border:none;border-radius:8px;padding:10px 24px;font-size:14px;cursor:pointer;font-family:inherit;font-weight:500}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes slideIn{to{opacity:1;transform:translateX(0)}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+<div class="loading" id="loading" style="display:none"><div class="spinner"></div><p id="loadMsg">Connexion à ClickUp...</p></div>
+<div class="setup" id="setup">
+<h2>Harmony Movers Scoreboard</h2>
+<p>Entrez votre clé API ClickUp pour connecter le tableau de bord.<br><a href="https://app.clickup.com/settings/apps" target="_blank" style="color:#c0392b">Obtenir ma clé API →</a></p>
+<input type="password" id="apiKeyInput" placeholder="pk_xxxxxxx_xxxxxxxxxxxxxxxxxxxxxx">
+<div style="display:flex;gap:8px;align-items:center;justify-content:center;margin-bottom:12px"><input type="number" id="goalInput" placeholder="Objectif mensuel" value="120" style="width:180px"></div>
+<button onclick="saveAndStart()">Connecter</button>
+</div>
+<div id="dashboard" style="display:none"></div>
+</div>
+<script>
+const LIST_ID="901702248706",ADV_ID="8a4d9b59-7ae4-4121-bca8-68133c4cda83",SVC_ID="1349e15f-9fe7-46a0-a2e7-65b4de72ba20";
+const ADV={0:"Elan",1:"Josée",2:"Peter",3:"Yasmine",4:"Lev",5:"Carole",6:"Théodore",7:"Léo"};
+const CLR={Elan:"#c0392b",Josée:"#e91e8f",Peter:"#7c3aed",Yasmine:"#8b5cf6",Lev:"#0ea5e9",Carole:"#2563eb","Théodore":"#059669","Léo":"#6b7280"};
+const MO_S=["jan.","fév.","mars","avr.","mai","juin","juil.","août","sept.","oct.","nov.","déc."];
+const MO_F=["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
+let KEY="",GOAL=120,D=null;
+
+function saveAndStart(){KEY=document.getElementById("apiKeyInput").value.trim();GOAL=parseInt(document.getElementById("goalInput").value)||120;if(!KEY)return alert("Clé API requise");localStorage.setItem("hm_k",KEY);localStorage.setItem("hm_g",GOAL);document.getElementById("setup").style.display="none";loadData();}
+window.addEventListener("DOMContentLoaded",()=>{const s=localStorage.getItem("hm_k"),g=localStorage.getItem("hm_g");if(s){KEY=s;GOAL=parseInt(g)||120;document.getElementById("setup").style.display="none";loadData();}});
+
+async function api(p){const r=await fetch("https://api.clickup.com/api/v2"+p,{headers:{Authorization:KEY,"Content-Type":"application/json"}});if(!r.ok)throw new Error("Erreur API "+r.status+(r.status===401?" — vérifiez votre clé API":""));return r.json();}
+
+function weekRange(){const n=new Date(),d=n.getDay(),x=n.getDate()-d+(d===0?-6:1),m=new Date(n);m.setDate(x);m.setHours(0,0,0,0);const s=new Date(m);s.setDate(m.getDate()+6);s.setHours(23,59,59,999);return{f:m.getTime(),t:s.getTime()};}
+function monthRange(y,m){return{f:new Date(y,m,1).getTime(),t:new Date(y,m+1,0,23,59,59,999).getTime()};}
+
+async function fetchB(from,to){let a=[],p=0;while(true){const d=await api(`/list/${LIST_ID}/task?statuses[]=booked%20%F0%9F%8E%89&include_closed=true&date_done_gt=${from}&date_done_lt=${to}&page=${p}&subtasks=false`);if(!d.tasks||!d.tasks.length)break;a=a.concat(d.tasks);if(d.tasks.length<100)break;p++;}return a;}
+function getAdv(t){if(!t.custom_fields)return"Non assigné";const f=t.custom_fields.find(c=>c.id===ADV_ID);return f&&f.value!=null?ADV[f.value]||"Non assigné":"Non assigné";}
+function getSvc(t){if(!t.custom_fields)return null;const f=t.custom_fields.find(c=>c.id===SVC_ID);return f&&f.value?Number(f.value):null;}
+
+async function loadData(){
+  const ld=document.getElementById("loading"),da=document.getElementById("dashboard");
+  ld.style.display="block";da.style.display="none";
+  const msgs=["Connexion à ClickUp...","Chargement semaine...","Chargement de l'année...","Analyse par conseiller...","Finalisation..."];
+  let mi=0;const iv=setInterval(()=>{mi=(mi+1)%msgs.length;document.getElementById("loadMsg").textContent=msgs[mi];},2500);
+  try{
+    const now=new Date(),yr=now.getFullYear(),cm=now.getMonth();
+    const wk=weekRange(),wT=await fetchB(wk.f,wk.t);
+    const md=[];let yt=0;
+    for(let m=0;m<=cm;m++){const r=monthRange(yr,m),ts=await fetchB(r.f,r.t);md.push({m,c:ts.length,ts});yt+=ts.length;}
+    const cT=md[cm]?.ts||[];
+    const aW={},aM={};
+    wT.forEach(t=>{const a=getAdv(t);aW[a]=(aW[a]||0)+1;});
+    cT.forEach(t=>{const a=getAdv(t);aM[a]=(aM[a]||0)+1;});
+    D={wt:wT.length,mt:cT.length,yt,mo:md.map(x=>({m:x.m,c:x.c})),aW,aM,
+      wB:wT.map(t=>({n:t.name,a:getAdv(t),d:getSvc(t)})),
+      mB:cT.map(t=>({n:t.name,a:getAdv(t),d:getSvc(t)})),cm};
+    clearInterval(iv);ld.style.display="none";da.style.display="block";render("week");
+  }catch(e){clearInterval(iv);ld.style.display="none";da.style.display="block";da.innerHTML=`<div class="error"><p>${e.message}</p><button onclick="loadData()">Réessayer</button><br><button class="btn" onclick="resetKey()" style="margin-top:12px">Changer clé API</button></div>`;}
+}
+function resetKey(){localStorage.removeItem("hm_k");localStorage.removeItem("hm_g");location.reload();}
+
+function render(v){
+  if(!D)return;
+  const now=new Date(),ds=now.toLocaleDateString("fr-CA",{weekday:"long",year:"numeric",month:"long",day:"numeric"});
+  const pct=Math.min(Math.round((D.mt/GOAL)*100),100),circ=2*Math.PI*27,off=circ-(pct/100)*circ;
+  const adv=v==="week"?D.aW:D.aM,bk=v==="week"?D.wB:D.mB,bt=v==="week"?D.wt:D.mt;
+  const so=Object.entries(adv).filter(([n])=>n!=="Non assigné").sort((a,b)=>b[1]-a[1]);
+  const mx=so.length?so[0][1]:1,ua=adv["Non assigné"]||0;
+  const mxM=Math.max(...D.mo.map(x=>x.c),1);
+
+  document.getElementById("dashboard").innerHTML=`
+    <div class="header">
+      <div class="header-left">
+        <div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></div>
+        <div><h1>Harmony Movers</h1><p class="date">${ds}</p></div>
+      </div>
+      <div style="display:flex;gap:6px"><button class="btn" onclick="loadData()">Actualiser</button><button class="btn" onclick="resetKey()" style="padding:6px 10px">&#9881;</button></div>
+    </div>
+
+    <div class="cards">
+      <div class="card-red"><div class="circle"></div><p class="card-label">Semaine</p><p class="card-number mono">${D.wt}</p><p class="card-sub">booked</p></div>
+      <div class="card"><p class="card-label">${MO_F[D.cm]}</p><p class="card-number mono">${D.mt}</p><p class="card-sub">booked</p></div>
+      <div class="card"><p class="card-label">Année ${now.getFullYear()}</p><p class="card-number mono">${D.yt}</p><p class="card-sub">booked</p></div>
+      <div class="card ring-card">
+        <div class="ring-wrap">
+          <svg width="64" height="64" style="transform:rotate(-90deg)"><circle cx="32" cy="32" r="27" fill="none" stroke="rgba(192,57,43,0.12)" stroke-width="5"/><circle cx="32" cy="32" r="27" fill="none" stroke="#c0392b" stroke-width="5" stroke-dasharray="${circ}" stroke-dashoffset="${off}" stroke-linecap="round" style="transition:stroke-dashoffset 1.5s"/></svg>
+          <div class="ring-text mono">${pct}%</div>
+        </div>
+        <p style="font-size:9px;color:#aaa;margin-top:4px">obj. ${GOAL}</p>
+      </div>
+    </div>
+
+    <div style="margin-bottom:2rem">
+      <div class="section-title"><span>${now.getFullYear()} — ${D.yt} réservations</span></div>
+      <div class="chart-wrap">
+        ${D.mo.map((x,i)=>{
+          const h=x.c>0?Math.max((x.c/mxM)*100,5):2;
+          return`<div class="chart-col"><div class="chart-num mono" style="${x.c===0?'visibility:hidden':''}">${x.c}</div><div class="chart-bar" style="height:${h}%;background:${i===D.cm?'#c0392b':'#e0e0e0'}"><span class="tip">${MO_F[i]}: ${x.c}</span></div><span class="chart-lbl">${MO_S[i]}</span></div>`;
+        }).join('')}
+        ${Array.from({length:11-D.cm},(_,i)=>`<div class="chart-col"><div class="chart-num mono" style="visibility:hidden">0</div><div class="chart-bar" style="height:2%;background:#f5f5f5"></div><span class="chart-lbl" style="color:#ddd">${MO_S[D.cm+1+i]||''}</span></div>`).join('')}
+      </div>
+    </div>
+
+    <div class="tabs">
+      <div class="tab ${v==='week'?'active':''}" onclick="render('week')">Semaine (${D.wt})</div>
+      <div class="tab ${v==='month'?'active':''}" onclick="render('month')">${MO_F[D.cm]} (${D.mt})</div>
+    </div>
+
+    <div style="margin-bottom:2rem">
+      <div class="section-title"><span>Classement conseillers</span></div>
+      ${so.map(([n,c],i)=>`<div class="advisor-row" style="animation-delay:${i*.07}s"><span class="advisor-rank mono" style="color:${i===0?'#c0392b':'#ccc'}">${i+1}.</span><span class="advisor-name">${n}</span><div class="advisor-bar-bg"><div class="advisor-bar" style="width:${(c/mx)*100}%;background:${CLR[n]||'#6b7280'}">${c>1?`<span>${c}</span>`:''}</div></div><span class="advisor-count mono">${c}</span></div>`).join('')}
+      ${ua>0?`<div class="advisor-row" style="opacity:.5;animation-delay:${so.length*.07}s"><span class="advisor-rank mono" style="color:#ccc">—</span><span class="advisor-name" style="color:#999;font-style:italic;font-size:13px">Non assigné</span><div style="flex:1"></div><span style="font-size:16px;color:#bbb;font-weight:500;min-width:32px;text-align:right">${ua}</span></div>`:''}
+    </div>
+
+    <div style="margin-bottom:1.5rem">
+      <div class="section-title"><span>Réservations</span><span style="font-size:12px;font-weight:500;color:#aaa">${bt} total</span></div>
+      <div id="bkList">${mkBk(bk,10)}</div>
+      ${bt>10?`<button class="expand-btn" id="exBtn" onclick="toggleBk()">Voir les ${bt} réservations ▼</button>`:''}
+    </div>
+
+    <div class="footer"><div class="footer-dot"></div><p>Données en direct de ClickUp · Harmony Movers ${now.getFullYear()}</p></div>`;
+  window._bk=bk;
+}
+
+function mkBk(bk,lim){
+  const ls=lim?bk.slice(0,lim):bk;
+  return ls.map(b=>{
+    const dt=b.d?new Date(b.d).toLocaleDateString("fr-CA",{day:"numeric",month:"short"}):"";
+    const bg=b.a&&b.a!=="Non assigné"?`<span class="booking-badge" style="background:${CLR[b.a]||'#6b7280'}18;color:${CLR[b.a]||'#6b7280'}">${b.a}</span>`:"";
+    return`<div class="booking-row"><div class="booking-dot"></div><span class="booking-name">${b.n}</span>${dt?`<span class="booking-date">${dt}</span>`:""}${bg}</div>`;
+  }).join('');
+}
+
+function toggleBk(){
+  const l=document.getElementById("bkList"),b=document.getElementById("exBtn");
+  if(b.dataset.x==="1"){l.innerHTML=mkBk(window._bk,10);b.textContent=`Voir les ${window._bk.length} réservations ▼`;b.dataset.x="0";}
+  else{l.innerHTML=mkBk(window._bk);b.textContent="Réduire ▲";b.dataset.x="1";}
+}
+</script>
+</body>
+</html>
